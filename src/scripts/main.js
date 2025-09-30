@@ -9,25 +9,25 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   tree.querySelectorAll('li').forEach((li) => {
-    const text = li.firstChild;
+    const textNode = Array.from(li.childNodes).find(
+      (n) => n.nodeType === Node.TEXT_NODE && n.nodeValue.trim(),
+    );
 
-    if (text && text.nodeType === Node.TEXT_NODE) {
-      const span = document.createElement('span');
-
-      const value = text.nodeValue.trim();
-
-      if (!value) {
-        return;
-      }
-      span.textContent = value;
-      text.nodeValue = '';
-
-      li.insertBefore(span, li.firstChild);
+    if (!textNode) {
+      return;
     }
+
+    const span = document.createElement('span');
+    const value = textNode.nodeValue.trim();
+
+    span.textContent = value;
+
+    textNode.nodeValue = textNode.nodeValue.replace(value, '');
+    li.insertBefore(span, textNode);
   });
 
   tree.addEventListener('click', (e) => {
-    if (e.target.tagName !== 'SPAN') {
+    if (!e.target.closest || !e.target.closest('span')) {
       return;
     }
 
