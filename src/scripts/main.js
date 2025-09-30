@@ -14,9 +14,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (text && text.nodeType === Node.TEXT_NODE) {
       const span = document.createElement('span');
 
-      span.textContent = text.textContent.trim();
-      li.insertBefore(span, text);
-      li.removeChild(text);
+      const value = text.nodeValue.trim();
+
+      if (!value) {
+        return;
+      }
+      span.textContent = value;
+      text.nodeValue = '';
+
+      li.insertBefore(span, li.firstChild);
     }
   });
 
@@ -26,7 +32,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const li = e.target.closest('li');
-    const childUl = li.querySelector('ul');
+
+    if (!li) {
+      return;
+    }
+
+    const childUl = li.querySelector(':scope > ul');
 
     if (childUl) {
       childUl.hidden = !childUl.hidden;
